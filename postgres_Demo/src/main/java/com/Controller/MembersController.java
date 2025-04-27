@@ -1,272 +1,189 @@
-package com.Controller;
+package com.daoClasses;
 
-import com.daoClasses.MembersDAO;
 import com.model.Members;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.time.LocalDate;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-import static java.lang.System.out;
-
-//We need to  create a class that inherits from HttpServlet
-// while doing so we overrides methods doGet, doPost
-
-public class MembersController extends HttpServlet {
-
-    private final MembersDAO membersDAO = new MembersDAO();
-
-    // https://www.geeksforgeeks.org/servlet-form-data/
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        response.setContentType("text/html");
-        String pathInfo = request.getPathInfo();
-
-        if (pathInfo == null || "/".equals(pathInfo)) {
-            try {
-
-                // Provided sample code
-                /*public void showLoginForm(HttpServletRequest req, HttpServletResponse res) throws IOException {
-                    res.setContentType("text/html");
-                    PrintWriter out = res.getWriter();
-                    out.println("<html>");
-                    out.println("<head>");
-                    out.println("<title>Login</title>");
-                    out.println("</head>");
-                    out.println("<body>");
-                    out.println("<br>Please enter username and password");
-                    out.println("<form method=post>");
-                    out.println("<br>Username: <input type=text name=username>");
-                    out.println("<br>Password: <input type=text name=password>");
-                    out.println("<br><input type=submit>");
-                    out.println("</form>");
-                    out.println("</body>");
-                    out.println("</html>");
-                }
-                */
+public class MembersDAO {
+    private static String url = "jdbc:postgresql://localhost:5432/";
+    private static String dbName = "lib";
+    private static String dbUser = "postgres";
+    private static String dbPassword = "000000";
 
 
+    private static final String INSERT_MEMBERS_SQL = "INSERT INTO Members (first_name, last_name, email, membership_date) VALUES (?, ?, ?, ?);";
+    private static final String SELECT_ALL_MEMBERS = "SELECT * FROM Members";
+    private static final String DELETE_MEMBERS_SQL = "DELETE FROM Members where member_id = ?;";
+    private static final String UPDATE_MEMBERS_SQL = "UPDATE Members SET first_name = ?, last_name= ?, email =? where member_id = ?;";
+    private static final String SELECT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members WHERE member_id = ?;";
+    private static final String SORT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members ORDER BY member_id;";
 
 
-                // https://www.w3schools.com/html/tryit.asp?filename=tryhtml_table_border
-                // Use this to make tables recall header vs cell data
-                // See example servet code 9.18
-                // Make main bar to navigate to info
-                PrintWriter out = response.getWriter();
-                out.println("<html><body>");
-                out.println("<h3>Member Details</h3>");
-                out.println("<table border=1><tr>" +
-                        "<th>Member ID</th>" +
-                        "<th>First Name</th>" +
-                        "<th>Last Name</th>" +
-                        "<th>Email INFO</th>" +
-                        "<th>Date Registered</th>" +
-                        "<th>EDIT</th>" +
-                        "<th>DELETE</th>");
+    // establish connection
+    public static Connection getConnection() throws SQLException {
+        Connection con = null;
 
-                //"<th>View Borrowed Books</th>" +
-                //"<th>View Member Fines</th>" +
-
-                //List <Members> allMembers = membersDAO.selectAllMembers();
-                List<Members> allMembers = membersDAO.sortMembersAsc();
-                if (allMembers != null) {
-                    for (Members member: allMembers) {
-                        out.println("<tr>");
-
-                        out.println("<td>" + member.getMember_id() + "</td>");
-                        out.println("<td>" + member.getFirst_name() + "</td>");
-                        out.println("<td>" + member.getLast_name() + "</td>");
-                        out.println("<td>" + member.getEmail() + "</td>");
-                        out.println("<td>" + member.getMembership_date() + "</td>");
-
-                        // TODO... check why only works for http://localhost:9999/members vs /members/
-                        out.println("<td>");
-                        out.println("<form action=members/update method=get>");
-                        out.println("<input type=hidden name=memberId value=" + member.getMember_id() + ">");
-                        out.println("<button type=submit>Update</button>");
-                        out.println("</form>");
-                        out.println("</td>");
-
-                        out.println("<td>");
-                        out.println("<form action=members/delete method=post>");
-                        out.println("<input type=hidden name=memberId value=" + member.getMember_id() + ">");
-                        out.println("<button type=submit>Delete</button>");
-
-                        out.println("</form>");
-                        out.println("</td>");
-
-
-                        // generate remaining columns (view member fines, borrowed books, etc)
-
-                        out.println("  </tr>");
-                        //out.close();
-
-                    }
-                } else {
-                    out.println("<h1>No members found.</h1>");
-                }
-
-            } catch (Exception e) // check if valid
+        try{
+            Class.forName("org.postgresql.Driver");
+            con= DriverManager.getConnection(url + dbName, dbUser, dbPassword);
+            if(con!=null)
             {
-                out.println(e);
+                System.out.println("Connected to PostgreSQL database");
+
+            }else{
+                System.out.println("Failed to connect to PostgreSQL database");
             }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return con;
+    }
 
-        } else if ("/add".equals(pathInfo)) {
-            String html = readFile("view/add-member-form.html");
-            try (PrintWriter out = response.getWriter()) {
-                out.println(html);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if ("/update".equals(pathInfo)) {
-            String memberIdToEdit = request.getParameter("memberId");
-            try {
-                int memberId = Integer.parseInt(memberIdToEdit);
-                Members member = membersDAO.getMemberById(memberId);
-                if (member != null) {
-                    // both ID and Name have same value -> getElementById
-                    // Can implement this as a script later for JS
-                    // https://www.w3schools.com/html/tryit.asp?filename=tryhtml_form_submit
-                    // This example came in handy since it showed with prefilled attributes
-                    // needed since we are reusing add methods for updating
-                    // find out about labels being printed
-                    // TODO... INPUT VALIDATION 
-                    PrintWriter out = response.getWriter();
-                    out.println("<!DOCTYPE html>");
-                    out.println("<html>");
-                    out.println("<body>");
-                    out.println("<h2>Update User</h2>\n");
 
-                    out.println("<form action='" + request.getContextPath() + "/members/update' method='post'>");
-                    //out.println("label for=\"memberId\">First name:</label><br>");
-                    out.println("<input type='hidden' id='memberId' name='memberId' value='" + member.getMember_id() + "'>");
+    public void insertMember(Members mem) throws SQLException {
+        System.out.println(INSERT_MEMBERS_SQL);
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MEMBERS_SQL)) {
+            //preparedStatement.setInt(1, mem.getMember_id()); // incremented when user fills out new form with if SERIAL?
+            preparedStatement.setString(1, mem.getFirst_name());
+            preparedStatement.setString(2, mem.getLast_name());
+            preparedStatement.setString(3, mem.getEmail());
+            preparedStatement.setDate(4, mem.getMembership_date());
 
-                    out.println("<div>");
-                    out.println("<h3>First Name</h3>");
-
-                    //out.println("label for=\"firstName\">First name:</label><br>");
-                    out.println("<input type='text' id='firstName' name='firstName' value='" + member.getFirst_name() + "'>");
-                    out.println("</div>");
-
-                    out.println("<div>");
-                    out.println("<h3>Last Name</h3>");
-                    out.println("<input type='text' id='lastName' name='lastName' value='" + member.getLast_name() + "'>");
-                    out.println("</div>");
-
-                    //out.println("label for=\"email\">email:</label><br>");
-                    out.println("<div>");
-                    out.println("<h3>Email</h3>");
-                    out.println("<input type='text' id='email' name='email' value='" + member.getEmail() + "'>");
-                    out.println("</div>");
-
-                    // add cancel to revert back to pages members
-                    out.println("<input type='submit' value='Update'>");
-
-                    out.println("</form>");
-                    out.println("</body>");
-                    out.println("</html>");
-
-                } else {
-                    response.getWriter().println("Error: Member with ID " + memberId + " not found for editing.");
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-        } else {
-            try (PrintWriter out = response.getWriter()) {
-                out.println("<h1>Not Found</h1><p>The requested resource was not found.</p>");
-            }
+            System.out.println("Member Inserted Successfully...");
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error Insert Members" + e);
         }
     }
 
-    private String readFile(String filename) {
-        InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(filename);
-        Scanner scanner = new Scanner(resourceAsStream);
-        StringBuilder content = new StringBuilder();
-        while (scanner.hasNextLine()) {
-            content.append(scanner.nextLine());
+    public boolean deleteMember(int id) throws SQLException {
+        boolean result = false;
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_MEMBERS_SQL);) {
+            statement.setInt(1, id);
+            boolean check_success = statement.executeUpdate() > 0;
+            if (check_success) {
+                System.out.println("Member deleted with id: " + id);
+                result = true;
+            } else
+            {
+                System.out.println("Member deletion failed");
+                result = false;
+            }
+
         }
-        return content.toString();
+
+        return result;
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String pathInfo = request.getPathInfo();
+    public Members getMemberById(int id) throws SQLException {
+        ResultSet resultSet = null;
+        Members member = null;
 
-        if ("/add".equals(pathInfo)) {
-            String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
-            String email = request.getParameter("email");
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID);) {
+            statement.setInt(1, id);
 
-            Members newMember = new Members();
-            newMember.setFirst_name(firstName);
-            newMember.setLast_name(lastName);
-            newMember.setEmail(email);
-            newMember.setMembership_date(Date.valueOf(LocalDate.now()));
+            resultSet = statement.executeQuery();
 
-            try {
-                membersDAO.insertMember(newMember);
-                response.sendRedirect(request.getContextPath() + "/members");
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            if (resultSet.next()) {
+                member = new Members();
+                member.setMember_id(resultSet.getInt("member_id"));
+                member.setFirst_name(resultSet.getString("first_name"));
+                member.setLast_name(resultSet.getString("last_name"));
+                member.setEmail(resultSet.getString("email"));
+                member.setMembership_date(resultSet.getDate("membership_date"));
             }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return member;
+    }
 
-        } else if (("/delete".equals(pathInfo))) {
-            String memRemove = request.getParameter("memberId");
-            try {
-                int memberId = Integer.parseInt(memRemove);
-                boolean deleted = membersDAO.deleteMember(memberId);
-                if (deleted) {
-                    response.sendRedirect(request.getContextPath() + "/members");
-                } else {
-                    // for debugging right now
-                    out.println("Member not found");
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
 
-            // relatively similar to //add
-        } else if (("/update".equals(pathInfo))) {
-            String updateId = request.getParameter("memberId");
+    public boolean updateMember(Members mem) throws SQLException {
+        boolean check_success;
 
-            String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
-            String email = request.getParameter("email");
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_MEMBERS_SQL);) {
+            statement.setString(1, mem.getFirst_name());
+            statement.setString(2, mem.getLast_name());
+            statement.setString(3, mem.getEmail());
+            statement.setInt(4, mem.getMember_id());
 
-            try {
-                int memId = Integer.parseInt(updateId);
-                Members updatedMember = new Members();
-
-                updatedMember.setFirst_name(firstName);
-                updatedMember.setLast_name(lastName);
-                updatedMember.setEmail(email);
-                updatedMember.setMember_id(memId);
-                boolean updated = membersDAO.updateMember(updatedMember);
-                if (updated) {
-                    response.sendRedirect(request.getContextPath() + "/members");
-                } else {
-                    out.println("ERROR in update Post");
-                    //response.sendRedirect(request.getContextPath() + "/members");
-                }
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            check_success = statement.executeUpdate() > 0;
 
         }
+        return check_success;
+    }
+    // Most likely not needed
+    public List<Members> selectAllMembers() throws SQLException {
+
+        List <Members> mem = new ArrayList<>();
+        try (Connection connection = getConnection();PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_MEMBERS);)
+        {
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int memberId = rs.getInt("member_id");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String email = rs.getString("email");
+                Date date = rs.getDate("membership_date");
+                mem.add(new Members(memberId, firstName, lastName, email, date));
+            }
+        }
+        System.out.println(mem);
+        return mem;
+    }
+
+
+    public List<Members> sortMembersAsc() throws SQLException {
+        List<Members> sortedMembers = new ArrayList<>();
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(SORT_BY_ID);
+             ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                // similar to og method should check why this should be default...
+                Members member = new Members();
+                member.setMember_id(rs.getInt("member_id"));
+                member.setFirst_name(rs.getString("first_name"));
+                member.setLast_name(rs.getString("last_name"));
+                member.setEmail(rs.getString("email"));
+                member.setMembership_date(rs.getDate("membership_date"));
+                sortedMembers.add(member);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sortedMembers;
     }
 
 }
+
+    /*public static void main(String[] args) throws SQLException {
+        MembersDAO membersDAO = new MembersDAO();
+        Members newMember = new Members();
+        newMember.setMember_id(8);
+        newMember.setFirst_name("Tedddster");
+        newMember.setLast_name("Usddttttder1");
+        newMember.setEmail("test1.ddusejknkr@example.com");
+        LocalDate signupLocalDate = LocalDate.now();
+        Date signupDate = Date.valueOf(signupLocalDate);
+        newMember.setMembership_date(signupDate);
+
+        // Call the insertMember method
+        //membersDAO.insertMember(newMember);
+        //membersDAO.deleteMember(2);
+
+
+        membersDAO.selectAllMembers();
+
+    }
+*/
+
+
+
+
+
