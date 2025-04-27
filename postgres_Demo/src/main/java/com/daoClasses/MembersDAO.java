@@ -18,7 +18,7 @@ public class MembersDAO {
     private static final String DELETE_MEMBERS_SQL = "DELETE FROM Members where member_id = ?;";
     private static final String UPDATE_MEMBERS_SQL = "UPDATE Members SET first_name = ?, last_name= ?, email =? where member_id = ?;";
     private static final String SELECT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members WHERE member_id = ?;";
-
+    private static final String SORT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members ORDER BY member_id;";
 
 
     // establish connection
@@ -115,7 +115,7 @@ public class MembersDAO {
         }
         return check_success;
     }
-
+    // Most likely not needed
     public List<Members> selectAllMembers() throws SQLException {
 
         List <Members> mem = new ArrayList<>();
@@ -136,8 +136,28 @@ public class MembersDAO {
         return mem;
     }
 
+    public List<Members> sortMembersAsc() throws SQLException {
+        List<Members> sortedMembers = new ArrayList<>();
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(SORT_BY_ID);
+             ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                // similar to og method should check why this should be default...
+                Members member = new Members();
+                member.setMember_id(rs.getInt("member_id"));
+                member.setFirst_name(rs.getString("first_name"));
+                member.setLast_name(rs.getString("last_name"));
+                member.setEmail(rs.getString("email"));
+                member.setMembership_date(rs.getDate("membership_date"));
+                sortedMembers.add(member);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sortedMembers;
+    }
 
-
+}
 
     /*public static void main(String[] args) throws SQLException {
         MembersDAO membersDAO = new MembersDAO();
@@ -163,4 +183,4 @@ public class MembersDAO {
 
 
 
-}
+
