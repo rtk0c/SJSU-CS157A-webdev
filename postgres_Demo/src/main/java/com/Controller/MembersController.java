@@ -73,11 +73,11 @@ public class MembersController extends HttpServlet {
                         "<th>EDIT</th>" +
                         "<th>DELETE</th>");
 
-                        //"<th>View Borrowed Books</th>" +
-                        //"<th>View Member Fines</th>" +
+                //"<th>View Borrowed Books</th>" +
+                //"<th>View Member Fines</th>" +
 
-                List <Members> allMembers = membersDAO.selectAllMembers();
-                membersDAO.selectAllMembers();
+                //List <Members> allMembers = membersDAO.selectAllMembers();
+                List<Members> allMembers = membersDAO.sortMembersAsc();
                 if (allMembers != null) {
                     for (Members member: allMembers) {
                         out.println("<tr>");
@@ -128,16 +128,64 @@ public class MembersController extends HttpServlet {
                 e.printStackTrace();
             }
         } else if ("/update".equals(pathInfo)) {
-            // TODO... post complete since using same html file with slight changes
-            // https://stackoverflow.com/questions/4055199/html-how-to-pre-populate-form-field-with-known-value-upon-load
+            String memberIdToEdit = request.getParameter("memberId");
+            try {
+                int memberId = Integer.parseInt(memberIdToEdit);
+                Members member = membersDAO.getMemberById(memberId);
+                if (member != null) {
+                    // both ID and Name have same value -> getElementById
+                    // Can implement this as a script later for JS
+                    // https://www.w3schools.com/html/tryit.asp?filename=tryhtml_form_submit
+                    // This example came in handy since it showed with prefilled attributes
+                    // needed since we are reusing add methods for updating
+                    // find out about labels being printed
+                    // TODO... INPUT VALIDATION 
+                    PrintWriter out = response.getWriter();
+                    out.println("<!DOCTYPE html>");
+                    out.println("<html>");
+                    out.println("<body>");
+                    out.println("<h2>Update User</h2>\n");
 
+                    out.println("<form action='" + request.getContextPath() + "/members/update' method='post'>");
+                    //out.println("label for=\"memberId\">First name:</label><br>");
+                    out.println("<input type='hidden' id='memberId' name='memberId' value='" + member.getMember_id() + "'>");
 
+                    out.println("<div>");
+                    out.println("<h3>First Name</h3>");
 
+                    //out.println("label for=\"firstName\">First name:</label><br>");
+                    out.println("<input type='text' id='firstName' name='firstName' value='" + member.getFirst_name() + "'>");
+                    out.println("</div>");
 
+                    out.println("<div>");
+                    out.println("<h3>Last Name</h3>");
+                    out.println("<input type='text' id='lastName' name='lastName' value='" + member.getLast_name() + "'>");
+                    out.println("</div>");
 
+                    //out.println("label for=\"email\">email:</label><br>");
+                    out.println("<div>");
+                    out.println("<h3>Email</h3>");
+                    out.println("<input type='text' id='email' name='email' value='" + member.getEmail() + "'>");
+                    out.println("</div>");
 
-        }else {
-                out.println("<h1>Not Found</h1><p>The resource was not found.</p>");
+                    // add cancel to revert back to pages members
+                    out.println("<input type='submit' value='Update'>");
+
+                    out.println("</form>");
+                    out.println("</body>");
+                    out.println("</html>");
+
+                } else {
+                    response.getWriter().println("Error: Member with ID " + memberId + " not found for editing.");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        } else {
+            try (PrintWriter out = response.getWriter()) {
+                out.println("<h1>Not Found</h1><p>The requested resource was not found.</p>");
+            }
         }
     }
 
@@ -190,7 +238,7 @@ public class MembersController extends HttpServlet {
                 throw new RuntimeException(e);
             }
 
-          // relatively similar to //add
+            // relatively similar to //add
         } else if (("/update".equals(pathInfo))) {
             String updateId = request.getParameter("memberId");
 
