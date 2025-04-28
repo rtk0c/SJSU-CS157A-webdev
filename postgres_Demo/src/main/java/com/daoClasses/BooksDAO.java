@@ -4,7 +4,6 @@ import com.model.Books;
 import com.model.Members;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,8 @@ public class BooksDAO {
     private static String dbPassword = "000000";
 
 
+    private static final String SELECT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books WHERE book_id = ?;";
+    private static final String SORT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books " + "ORDER BY book_id;";
     private static final String INSERT_BOOKS_SQL = "INSERT INTO Books (book_id, title, author, page_count, publisher, date_published, library_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     private static final String SELECT_ALL_BOOKS = "SELECT * FROM Books";
     private static final String DELETE_BOOKS_SQL = "DELETE FROM Books where book_id = ?;";
@@ -72,19 +73,23 @@ public class BooksDAO {
     }
 
 
-    public void deleteBooks(int id) throws SQLException {
+    public boolean deleteBooks(int id) throws SQLException {
+        boolean result;
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_BOOKS_SQL);) {
             statement.setInt(1, id);
             boolean check_success = statement.executeUpdate() > 0;
             if (check_success) {
                 System.out.println("Books deleted with id: " + id);
+                result = true;
             } else
             {
                 System.out.println("Books deletion failed");
+                result = false;
             }
 
         }
 
+        return result;
     }
 
 
@@ -131,6 +136,69 @@ public class BooksDAO {
         return check_success;
     }
 
+    public List<Books> sortBooksAsc() throws SQLException {
+        List<Books> sortedBooks = new ArrayList<>();
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(SORT_BY_ID);
+             ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                // similar to og method should check why this should be default...
+                Books book = new Books();
+                book.setBook_id(rs.getInt("book_id"));
+                book.setTitle(rs.getString("title"));
+                book.setAuthor(rs.getString("author"));
+                book.setPage_count(rs.getInt("page_count"));
+                book.setPublisher(rs.getString("publisher"));
+                book.setDate_published(rs.getDate("date_published"));
+                book.setLibrary_copies(rs.getInt("library_copies"));
+
+                book.setAvailable_copies(rs.getInt("available_copies"));
+
+                sortedBooks.add(book);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sortedBooks;
+    }
+
+    public Books getBookById(int id) throws SQLException {
+        ResultSet resultSet = null;
+        Books book = null;
+
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID);) {
+            statement.setInt(1, id);
+
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                book = new Books();
+                book.setBook_id(resultSet.getInt("book_id"));
+                book.setTitle(resultSet.getString("title"));
+                book.setAuthor(resultSet.getString("author"));
+                book.setPage_count(resultSet.getInt("page_count"));
+                book.setPublisher(resultSet.getString("publisher"));
+                book.setDate_published(resultSet.getDate("date_published"));
+                book.setLibrary_copies(resultSet.getInt("library_copies"));
+                book.setAvailable_copies(resultSet.getInt("available_copies"));
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return book;
+    }
+
+}
+
+
+
+
+
+
+
+
+
 
 /*
 // Testing methods
@@ -158,4 +226,4 @@ public class BooksDAO {
 */
 
 
-}
+
