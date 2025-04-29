@@ -204,7 +204,7 @@ public class MembersController extends HttpServlet {
         out.println("  background-color: #f2f2f2;\n");
         out.println("  padding: 20px;");
         out.println("}");
-        
+
         out.println("</style>\n");
         out.println("</head>");
         out.println("<body>");
@@ -254,17 +254,22 @@ public class MembersController extends HttpServlet {
 
         out.println("<html><body>");
         out.println("<head>");
-        out.println("<title>Member Details</title>");
+
 
         out.println("<style>");
+
 
         out.println("table {\n");
         out.println("  margin-left: auto; \n");
         out.println("  margin-right: auto;");
+        out.println("  width: 90%;");
+        out.println("  max-width: 1000px;");
+        out.println("}");
 
         out.println("th, td {");
         out.println("  text-align: center;");
         out.println("  padding: 8px;");
+        out.println("  border-bottom: 1px solid #ddd;");
         out.println("}");
 
         out.println("tr:nth-child(even){background-color: #f2f2f2}\n");
@@ -272,7 +277,57 @@ public class MembersController extends HttpServlet {
         out.println("  background-color: #00ffcc;");
         out.println("  color: BLACK;");
         out.println("}");
+
+
+        // header
+        out.println(".header {");
+        out.println("  overflow: hidden;\n");
+        out.println("  background-color: #f1f1f1;\n");
+        out.println("  padding: 20px 10px;\n");
+
+        out.println("}");
+
+        out.println(".header a {\n");
+        out.println("  float: left;\n");
+        out.println("  color: blue;\n");
+        out.println("  text-align: center;\n");
+        out.println("  padding: 12px;\n");
+        out.println("  text-decoration: none;\n");
+        out.println("  font-size: 16px; \n");
+        out.println("  line-height: 20px;\n");
+        out.println("  border-radius: 10px;\n");
+        out.println("}");
+
+
+        out.println(".header a.active {");
+        out.println("background-color: dodgerblue;");
+        out.println("color: white;");
+        out.println("}");
+
+
+        out.println("@media screen and (max-width: 500px) {\n");
+        out.println("  .header a {\n");
+        out.println("    float: none;\n");
+        out.println("    display: flex;\n");
+        out.println("    text-align: left;\n");
+        out.println("}");
+
+
         out.println("</style>");
+        out.println("</head>");
+        out.println("<body>");
+
+        out.println("<div class=\"header\">\n");
+        out.println("    <div class=\"header-right\">\n");
+        out.println("    <a class=\"active\" href=\"/\">Home</a>\n");
+        out.println("    <a  href=\"/members/add\">Add Member</a>\n");
+        out.println("</div>\n");
+        out.println("</div>");
+
+
+        // TODO... Style and implent script to search by title?
+        out.println("<input type=\"text\" id=\"myInput\" onkeyup=\"myFunction()\" placeholder=\"Search for names..\" title=\"Type in a name\">");
+
 
         out.println("<table border=1><tr>" +
                 "<th>Member ID</th>" +
@@ -299,7 +354,8 @@ public class MembersController extends HttpServlet {
 
                 // TODO... check why only works for http://localhost:9999/members vs /members/
                 out.println("<td>");
-                out.println("<form action=members/update method=get>");
+                // /members/update fixed but still check
+                out.println("<form action=/members/update method=get>");
                 out.println("<input type=hidden name=memberId value=" + member.getMember_id() + ">");
                 out.println("<button type=submit>Update</button>");
                 out.println("</form>");
