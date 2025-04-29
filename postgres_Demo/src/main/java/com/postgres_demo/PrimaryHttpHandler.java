@@ -22,8 +22,8 @@ public class PrimaryHttpHandler extends HttpServlet {
             out.println("<body>");
             out.println("<p>Hello World1 (Servlet)</p>");
             // temp for easy access
-            out.println("<a href=\"http://localhost:9999/members/\">VIEW DELETE EDIT Members</a>\n");
-            out.println("<a href=\"http://localhost:9999/members/add\">ADD Members</a>\n");
+            out.println("<a href=\"http://localhost:9999/members/\">MEMBERS</a>\n");
+            out.println("<a href=\"http://localhost:9999/books/\">BOOKS</a>\n");
 
 
             out.println("</body>");
