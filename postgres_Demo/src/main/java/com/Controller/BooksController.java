@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 
 //We need to  create a class that inherits from HttpServlet
@@ -50,6 +49,7 @@ public class BooksController extends HttpServlet {
                 //out.println(html);
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println("Error: " + e);
             }
         } else if ("/update".equals(pathInfo)) {
             String bookIdToEdit = request.getParameter("bookId");
@@ -295,7 +295,7 @@ public class BooksController extends HttpServlet {
 
         out.println("<html><body>");
         out.println("<head>");
-        out.println("<title>Book Details</title>");
+
 
         out.println("<style>");
 
@@ -303,10 +303,14 @@ public class BooksController extends HttpServlet {
         out.println("table {\n");
         out.println("  margin-left: auto; \n");
         out.println("  margin-right: auto;");
+        out.println("  width: 90%;");
+        out.println("  max-width: 1000px;");
+        out.println("}");
 
         out.println("th, td {");
         out.println("  text-align: center;");
         out.println("  padding: 8px;");
+        out.println("  border-bottom: 1px solid #ddd;");
         out.println("}");
 
         out.println("tr:nth-child(even){background-color: #f2f2f2}\n");
@@ -321,11 +325,12 @@ public class BooksController extends HttpServlet {
         out.println("  overflow: hidden;\n");
         out.println("  background-color: #f1f1f1;\n");
         out.println("  padding: 20px 10px;\n");
+
         out.println("}");
 
         out.println(".header a {\n");
         out.println("  float: left;\n");
-        out.println("  color: black;\n");
+        out.println("  color: blue;\n");
         out.println("  text-align: center;\n");
         out.println("  padding: 12px;\n");
         out.println("  text-decoration: none;\n");
@@ -341,17 +346,28 @@ public class BooksController extends HttpServlet {
         out.println("}");
 
 
+        out.println("@media screen and (max-width: 500px) {\n");
+        out.println("  .header a {\n");
+        out.println("    float: none;\n");
+        out.println("    display: flex;\n");
+        out.println("    text-align: left;\n");
+        out.println("}");
+
+
         out.println("</style>");
         out.println("</head>");
         out.println("<body>");
 
         out.println("<div class=\"header\">\n");
-        out.println("    <a href=\"#default\" class=\"logo\">CompanyLogo</a>\n");
         out.println("    <div class=\"header-right\">\n");
-        out.println("    <a class=\"active\" href=\"/books\">Home</a>\n");
+        out.println("    <a class=\"active\" href=\"/\">Home</a>\n");
         out.println("    <a href=\"/books/add\">Add Book</a>\n");
         out.println("</div>\n");
         out.println("</div>");
+
+
+        // TODO... Style and implent script to search by title?
+        out.println("<input type=\"text\" id=\"myInput\" onkeyup=\"myFunction()\" placeholder=\"Search for names..\" title=\"Type in a name\">");
 
 
         out.println("<table border=1><tr>" +
