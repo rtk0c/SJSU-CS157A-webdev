@@ -17,11 +17,12 @@ public class BooksDAO {
 
     private static final String SELECT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books WHERE book_id = ?;";
     private static final String SORT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books " + "ORDER BY book_id;";
-    private static final String INSERT_BOOKS_SQL = "INSERT INTO Books (book_id, title, author, page_count, publisher, date_published, library_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     private static final String SELECT_ALL_BOOKS = "SELECT * FROM Books";
     private static final String DELETE_BOOKS_SQL = "DELETE FROM Books where book_id = ?;";
     // TODO... made id SERIAL choose whether to handle it or not, how to handle it
     private static final String UPDATE_BOOKS_SQL = "UPDATE Books SET title= ?, author = ?, page_count = ?, publisher = ?, date_published = ?, library_copies = ?, available_copies = ? where book_id = ?;";
+    private static final String INSERT_BOOKS_SQL = "INSERT INTO Books (title, author, page_count, publisher, date_published, library_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?, ?);";
+
 
 
     // establish connection
@@ -99,14 +100,14 @@ public class BooksDAO {
 //(book_id, title, author, page_count, publisher, date_published, library_copies, available)
         try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BOOKS_SQL);) {
 
-            preparedStatement.setInt(1, book.getBook_id());
-            preparedStatement.setString(2, book.getTitle());
-            preparedStatement.setString(3, book.getAuthor());
-            preparedStatement.setInt(4, book.getPage_count());
-            preparedStatement.setString(5, book.getPublisher());
-            preparedStatement.setDate(6, book.getDate_published());
-            preparedStatement.setInt(7, book.getLibrary_copies());
-            preparedStatement.setInt(8, book.getAvailable_copies());
+            //preparedStatement.setInt(1, book.getBook_id());
+            preparedStatement.setString(1, book.getTitle());
+            preparedStatement.setString(2, book.getAuthor());
+            preparedStatement.setInt(3, book.getPage_count());
+            preparedStatement.setString(4, book.getPublisher());
+            preparedStatement.setDate(5, book.getDate_published());
+            preparedStatement.setInt(6, book.getLibrary_copies());
+            preparedStatement.setInt(7, book.getAvailable_copies());
 
             preparedStatement.executeUpdate();
             System.out.println("Books Inserted Successfully...");
