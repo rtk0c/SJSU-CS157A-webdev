@@ -1,4 +1,4 @@
-package com.model;
+package cs157a.webdev.model;
 
 public class Fines {
     private int fine_id;

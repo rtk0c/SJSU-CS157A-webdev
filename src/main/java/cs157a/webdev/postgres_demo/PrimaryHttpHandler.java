@@ -1,4 +1,4 @@
-package com.postgres_demo;
+package cs157a.webdev.postgres_demo;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
-package com.Controller;
+package cs157a.webdev.Controller;
 
-import com.daoClasses.MembersDAO;
-import com.model.Members;
+import cs157a.webdev.daoClasses.MembersDAO;
+import cs157a.webdev.model.Members;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

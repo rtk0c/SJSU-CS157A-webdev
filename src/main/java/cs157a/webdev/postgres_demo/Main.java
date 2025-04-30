@@ -1,6 +1,6 @@
-package com.postgres_demo;
+package cs157a.webdev.postgres_demo;
 
-import com.Controller.MembersController;
+import cs157a.webdev.Controller.MembersController;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;

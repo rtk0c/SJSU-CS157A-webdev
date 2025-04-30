@@ -1,4 +1,4 @@
-package com.postgres_demo;
+package cs157a.webdev.postgres_demo;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

@@ -1,7 +1,6 @@
-package com.daoClasses;
+package cs157a.webdev.daoClasses;
 
-import com.model.Books;
-import com.model.Members;
+import cs157a.webdev.model.Books;
 
 import java.sql.*;
 import java.util.ArrayList;

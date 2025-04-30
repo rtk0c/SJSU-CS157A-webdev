@@ -1,7 +1,7 @@
-package com.Controller;
+package cs157a.webdev.Controller;
 
-import com.daoClasses.BooksDAO;
-import com.model.Books;
+import cs157a.webdev.daoClasses.BooksDAO;
+import cs157a.webdev.model.Books;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

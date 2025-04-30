@@ -1,9 +1,8 @@
-package com.daoClasses;
+package cs157a.webdev.daoClasses;
 
-import com.model.Fines;
+import cs157a.webdev.model.Fines;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

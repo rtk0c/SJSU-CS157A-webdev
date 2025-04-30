@@ -1,4 +1,4 @@
-package com.model;
+package cs157a.webdev.model;
 
 import java.util.Date;
 
