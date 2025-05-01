@@ -1,6 +1,6 @@
 package cs157a.webdev.daoClasses;
 
-import cs157a.webdev.model.Members;
+import cs157a.webdev.model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ public class MembersDAO {
     private static final String UPDATE_MEMBERS_SQL = "UPDATE Members SET first_name = ?, last_name= ?, email =? where member_id = ?;";
     private static final String SELECT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members WHERE member_id = ?;";
     private static final String SORT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members ORDER BY member_id;";
+    private static final String sql = "SELECT COUNT(*) FROM members WHERE member_id = ?;";
 
 
     // establish connection
@@ -115,6 +116,7 @@ public class MembersDAO {
         }
         return check_success;
     }
+
     // Most likely not needed
     public List<Members> selectAllMembers() throws SQLException {
 
@@ -155,6 +157,28 @@ public class MembersDAO {
             e.printStackTrace();
         }
         return sortedMembers;
+    }
+
+    public boolean checkMemberIdExists(int memberId) throws SQLException {
+        ResultSet resultSet = null;
+        boolean check_exists = false;
+        try (Connection connection = getConnection();
+
+             PreparedStatement statement = connection.prepareStatement(sql);) { // Pass SQL to prepareStatement
+
+            statement.setInt(1, memberId);
+            resultSet = statement.executeQuery();
+
+            // move through and check for
+            if (resultSet.next()) {
+                int val = resultSet.getInt(1);
+                check_exists = (val > 0);
+            }
+
+        } catch (SQLException e)
+        {
+            System.out.println(e);
+        }        return check_exists;
     }
 
 }

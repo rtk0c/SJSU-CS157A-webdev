@@ -1,8 +1,9 @@
 package cs157a.webdev.daoClasses;
 
-import cs157a.webdev.model.Fines;
+import cs157a.webdev.model.*;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,19 +121,19 @@ public class FinesDAO {
 
 
 // Testing methods
-    public static void main(String[] args) throws SQLException {
+    /*public static void main(String[] args) throws SQLException {
         FinesDAO finesDAO = new FinesDAO();
-        /*Fines newFine = new Fines();
+        *//*Fines newFine = new Fines();
         newFine.setFine_id(3);
         newFine.setBr_id(5);
         newFine.setMember_id(3);
         newFine.setFine_total(14.99F);
-        newFine.setFine_status("Paid");*/
+        newFine.setFine_status("Paid");*//*
 
         // Call the insertMember method
         finesDAO.selectAllFines();
 
-    }
+    }*/
 
 
 }
