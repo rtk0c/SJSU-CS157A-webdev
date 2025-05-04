@@ -7,12 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Borrow_ReturnsDAO {
-    private static String url = "jdbc:postgresql://localhost:5432/";
-    private static String dbName = "lib";
-    private static String dbUser = "postgres";
-    private static String dbPassword = "000000";
-
-
     private static final String DELETE_BR_SQL = "DELETE FROM Borrow_Returns where br_id = ?;";
     private static final String INSERT_BR_SQL = "INSERT INTO Borrow_Returns (borrow_date, return_date, due_date, borrowed_book_status, member_id, book_id) VALUES (?, ?, ?, ?, ?, ?);";
     private static final String JOIN_TABLES = "SELECT br.br_id, m.member_id, b.book_id, b.title, br.borrow_date, br.return_date, br.due_date, br.borrowed_book_status FROM Borrow_Returns br INNER JOIN Members m ON br.member_id = m.member_id INNER JOIN Books b ON br.book_id = b.book_id WHERE br.member_id = ?;";
@@ -30,7 +24,7 @@ public class Borrow_ReturnsDAO {
 
         try{
             Class.forName("org.postgresql.Driver");
-            con= DriverManager.getConnection(url + dbName, dbUser, dbPassword);
+            con= DriverManager.getConnection(DbCreds.url + DbCreds.dbName, DbCreds.dbUser, DbCreds.dbPassword);
             if(con!=null)
             {
                 System.out.println("Connected to PostgreSQL database");

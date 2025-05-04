@@ -9,13 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BooksDAO {
-
-    private static String url = "jdbc:postgresql://localhost:5432/";
-    private static String dbName = "lib";
-    private static String dbUser = "postgres";
-    private static String dbPassword = "000000";
-
-
     private static final String SELECT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books WHERE book_id = ?;";
     private static final String SORT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books " + "ORDER BY book_id;";
     private static final String SELECT_ALL_BOOKS = "SELECT * FROM Books";
@@ -32,7 +25,7 @@ public class BooksDAO {
 
         try{
             Class.forName("org.postgresql.Driver");
-            con= DriverManager.getConnection(url + dbName, dbUser, dbPassword);
+            con= DriverManager.getConnection(DbCreds.url + DbCreds.dbName, DbCreds.dbUser, DbCreds.dbPassword);
             if(con!=null)
             {
                 System.out.println("Connected to PostgreSQL database");

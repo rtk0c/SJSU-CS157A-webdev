@@ -7,12 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MembersDAO {
-    private static String url = "jdbc:postgresql://localhost:5432/";
-    private static String dbName = "lib";
-    private static String dbUser = "postgres";
-    private static String dbPassword = "000000";
-
-
     private static final String INSERT_MEMBERS_SQL = "INSERT INTO Members (first_name, last_name, email, membership_date) VALUES (?, ?, ?, ?);";
     private static final String SELECT_ALL_MEMBERS = "SELECT * FROM Members";
     private static final String DELETE_MEMBERS_SQL = "DELETE FROM Members where member_id = ?;";
@@ -28,7 +22,7 @@ public class MembersDAO {
 
         try{
             Class.forName("org.postgresql.Driver");
-            con= DriverManager.getConnection(url + dbName, dbUser, dbPassword);
+            con= DriverManager.getConnection(DbCreds.url + DbCreds.dbName, DbCreds.dbUser, DbCreds.dbPassword);
             if(con!=null)
             {
                 System.out.println("Connected to PostgreSQL database");

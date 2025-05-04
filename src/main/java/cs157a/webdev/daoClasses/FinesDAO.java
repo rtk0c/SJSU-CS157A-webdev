@@ -8,13 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FinesDAO {
-
-    private static String url = "jdbc:postgresql://localhost:5432/";
-    private static String dbName = "lib";
-    private static String dbUser = "postgres";
-    private static String dbPassword = "000000";
-
-
     private static final String INSERT_FINES_SQL = "INSERT INTO Fines (fine_id, br_id, member_id, fine_total, fine_status) VALUES (?, ?, ?, ?, ?);";
     private static final String SELECT_ALL_FINES = "SELECT * FROM Fines";
     private static final String DELETE_FINES_SQL = "DELETE FROM Fines where fine_id = ?;";
@@ -28,7 +21,7 @@ public class FinesDAO {
 
         try{
             Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection(url + dbName, dbUser, dbPassword);
+            con = DriverManager.getConnection(DbCreds.url + DbCreds.dbName, DbCreds.dbUser, DbCreds.dbPassword);
             if(con!=null)
             {
                 System.out.println("Connected to PostgreSQL database");
