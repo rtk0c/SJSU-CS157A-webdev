@@ -1,21 +1,3 @@
--- Example user and database name
--- Consider changing depending on your need
-CREATE USER dbuser WITH PASSWORD 'password';
-CREATE DATABASE cs157a_webdev_db OWNER dbuser;
-
--- Switch to our database
-\c cs157a_webdev_db
-
-CREATE TABLE Borrow_Returns (
-  br_id SERIAL PRIMARY KEY,
-  book_id INT NOT NULL,
-  member_id INT NOT NULL,
-  borrow_date DATE NOT NULL,
-  return_date DATE NOT NULL,
-  due_date DATE NOT NULL,
-  borrowed_book_status VARCHAR NOT NULL
-);
-
 CREATE TABLE Books (
   book_id SERIAL PRIMARY KEY,
   title VARCHAR(45) NOT NULL,
@@ -32,16 +14,7 @@ CREATE TABLE Members (
   first_name VARCHAR(45) NOT NULL,
   last_name VARCHAR(45) NOT NULL,
   email VARCHAR(45) NOT NULL,
-  membership_date DATE NOT NULL,
-  PRIMARY KEY (member_id)
-);
-
-CREATE TABLE Fines (
-  fine_id SERIAL PRIMARY KEY,
-  br_id INT NOT NULL,
-  fine_total DECIMAL NOT NULL,
-  fine_status VARCHAR(45) NOT NULL,
-  PRIMARY KEY (fine_id)
+  membership_date DATE NOT NULL
 );
 
 CREATE TABLE Borrow_Returns (
@@ -51,5 +24,15 @@ CREATE TABLE Borrow_Returns (
   borrow_date DATE NOT NULL,
   return_date DATE NOT NULL,
   due_date DATE NOT NULL,
-  borrowed_book_status VARCHAR NOT NULL
+  borrowed_book_status VARCHAR NOT NULL,
+  FOREIGN KEY (book_id) REFERENCES Books(book_id),
+  FOREIGN KEY (member_id) REFERENCES Members(member_id)
+);
+
+CREATE TABLE Fines (
+  fine_id SERIAL PRIMARY KEY,
+  br_id INT NOT NULL,
+  fine_total DECIMAL NOT NULL,
+  fine_status VARCHAR(45) NOT NULL,
+  FOREIGN KEY (br_id) REFERENCES Borrow_Returns(br_id)
 );
