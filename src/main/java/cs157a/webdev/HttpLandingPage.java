@@ -9,6 +9,7 @@ public class HttpLandingPage extends Handler.Abstract {
     public boolean handle(Request request, Response response, Callback callback) {
         response.setStatus(200);
 
+        //language=html
         Content.Sink.write(response, true, """
             <!DOCTYPE html>
             <html>
@@ -16,7 +17,6 @@ public class HttpLandingPage extends Handler.Abstract {
                 <title>Jetty Hello World Servlet</title>
             </head>
             <body>
-                <p>Hello World1 (Servlet)</p>
                 <a href="/members">MEMBERS</a>
                 <a href="/books">BOOKS</a>
             </body>

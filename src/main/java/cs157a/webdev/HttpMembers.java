@@ -32,9 +32,9 @@ public class HttpMembers extends Handler.Abstract {
         MultiMap<String> params = UrlEncoded.decodeQuery(uri.getQuery());
 
         var body = switch (path) {
-            case "/members/" -> htmlMainTable();
-            case "/members/add/" -> htmlAddMember(params);
-            case "/members/update/" -> htmlUpdate(params);
+            case "/members" -> htmlMainTable();
+            case "/members/add" -> htmlAddMember(params);
+            case "/members/update" -> htmlUpdate(params);
             default -> null;
         };
 
