@@ -10,9 +10,14 @@ public class HttpFine extends BaseHttpHandler {
     protected String handleGet(Request req) throws Exception {
         var params = getHtmlFormParams(req);
 
-        String brIdParam = params.getValue("brId");
-        int brId = Integer.parseInt(brIdParam);
-        List<Fines> memFin = (List<Fines>) Db.fines.getFineById(brId);
+
+        // first step to get br by id
+        // go through them find ones that are late, calculate fine, insert into fines >>> check inserted
+        String memIdParam = params.getValue("memberId");
+        int memId = Integer.parseInt(memIdParam);
+        Db.borrows.checkFines(memId);
+        List<Fines> memFin = Db.fines.sortFinesAsc(memId);
+        //System.out.println("Fines: " + memFin);
 
         // https://www.w3schools.com/html/tryit.asp?filename=tryhtml_table_border
         // Use this to make tables recall header vs cell data
@@ -80,9 +85,10 @@ public class HttpFine extends BaseHttpHandler {
                     <th>BR ID</th>
                     <th>Fine Total</th>
                     <th>Fine Status</th>
+                    <th>Update Fine Info</th>
 
                 </tr>
-                \{htmlBRMainTable(memFin)}
+                \{htmlBRMainTable(memFin, memId)}
             </table>
             """;
     }
@@ -92,22 +98,28 @@ public class HttpFine extends BaseHttpHandler {
 
 
 
-    private String htmlBRMainTable(List<Fines> allFin) {
-        if (allFin == null) {
+    private String htmlBRMainTable(List<Fines> memFin, int memberId) {
+        if (memFin == null) {
             return "<h1>No members books are found.</h1>";
         }
 
         var sb = new StringBuilder();
-        for (Fines fine :  allFin) {
+
+        for (Fines fin :  memFin) {
             sb.append(STR."""
                 <tr>
 
+                <td>\{fin.getBr_id()}</td>
+                <td>\{fin.getFine_total()}</td>
+                <td>\{fin.getFine_status()}</td>
 
-                <td>\{fine.getFine_status()}</td>
-                <td>\{fine.getFine_total()}</td>
-                <td>\{fine.getFine_status()}</td>
-
-
+                <td>
+                <form action="/fines/update" method="get">
+                    <input type="hidden" name="brId" value="\{fin.getBr_id()}">
+                    <input type="hidden" name="memberId" value="\{memberId}">
+                    <button type="submit">Update Fines Fees</button>
+                </form>
+                </td>
 
                 </tr>""");
         }

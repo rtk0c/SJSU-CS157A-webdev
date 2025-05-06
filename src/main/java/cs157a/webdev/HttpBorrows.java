@@ -103,9 +103,8 @@ public class HttpBorrows extends BaseHttpHandler {
             sb.append(STR."""
                 <tr>
 
-
-                <td>\{br.getBook_id()}</td>
                 <td>\{br.getMember_id()}</td>
+                <td>\{br.getBook_id()}</td>
                 <td>\{br.getBorrow_date()}</td>
                 <td>\{br.getReturn_date()}</td>
                 <td>\{br.getDue_date()}</td>

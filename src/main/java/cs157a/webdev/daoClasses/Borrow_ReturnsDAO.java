@@ -1,5 +1,6 @@
 package cs157a.webdev.daoClasses;
 
+import cs157a.webdev.*;
 import cs157a.webdev.model.*;
 
 import java.sql.*;
@@ -12,14 +13,12 @@ public class Borrow_ReturnsDAO {
     private static final String INSERT_BR_SQL = "INSERT INTO Borrow_Returns (member_id, book_id, borrow_date, return_date, due_date) VALUES (?, ?, ?, ?, ?);";
     private static final String JOIN_TABLES = "SELECT br.br_id, m.member_id, b.book_id, br.borrow_date, br.return_date, br.due_date FROM Borrow_Returns br INNER JOIN Members m ON br.member_id = m.member_id INNER JOIN Books b ON br.book_id = b.book_id WHERE br.member_id = ? ORDER BY br.br_id;";
     private static final String SELECT_BY_MEMBER_ID = "SELECT br_id, member_id, book_id, borrow_date, due_date, return_date  FROM borrow_returns WHERE member_id = ?";
-    private static final String UPDATE_BORROW_RETURN_STATUS = "UPDATE borrow_returns SET borrowed_book_status = ? WHERE br_id = ?";
+ // private static final String UPDATE_BORROW_RETURN_STATUS = "UPDATE borrow_returns SET borrowed_book_status = ? WHERE br_id = ?";
 
-
-    // In Borrow_ReturnsDAO.java
-
-    public boolean updateBorrowReturnStatus(int brId, String newStatus) throws SQLException {
+/*
+    public boolean updateBorrowReturnStatus(int brId, Boolean newStatus) throws SQLException {
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_BORROW_RETURN_STATUS)) {
-            statement.setString(1, newStatus);
+            statement.setBoolean(1, newStatus);
             statement.setInt(2, brId);
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
@@ -28,37 +27,7 @@ public class Borrow_ReturnsDAO {
             return false;
         }
     }
-
-
-    public List<Borrow_Returns> getBorrowReturnsByMemberId(int memberId) throws SQLException {
-        List<Borrow_Returns> borrowReturns = new ArrayList<>();
-        ResultSet rs = null;
-
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT_BY_MEMBER_ID)) {
-            statement.setInt(1, memberId);
-            rs = statement.executeQuery();
-
-            while (rs.next()) {
-                Borrow_Returns br = new Borrow_Returns();
-                //br.setBr_id(rs.getInt("br_id"));
-                br.setMember_id(rs.getInt("book_id"));
-                br.setMember_id(rs.getInt("member_id"));
-                br.setBorrow_date(rs.getDate("borrow_date"));
-                br.setDue_date(rs.getDate("due_date"));
-                br.setReturn_date(rs.getDate("return_date"));
-                //br.setBorrowed_book_status(rs.getString("borrowed_book_status"));
-                borrowReturns.add(br);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-        }
-        return borrowReturns;
-    }
-
+    */
     // establish connection
     public static Connection getConnection() throws SQLException {
         Connection con = null;
@@ -106,14 +75,11 @@ public class Borrow_ReturnsDAO {
 
             while (rs.next()) {
                 Borrow_Returns br = new Borrow_Returns();
-                //br.setBr_id(rs.getInt("br_id"));
                 br.setMember_id(rs.getInt("member_id"));
                 br.setBook_id(rs.getInt("book_id"));
-                //br.setTitle(rs.getString("title"));
                 br.setBorrow_date(rs.getDate("borrow_date"));
                 br.setReturn_date(rs.getDate("return_date"));
                 br.setDue_date(rs.getDate("due_date"));
-                //br.setBorrowed_book_status(rs.getString("borrowed_book_status"));
 
 
                 sortedBR.add(br);
@@ -125,6 +91,45 @@ public class Borrow_ReturnsDAO {
         return sortedBR;
     }
 
+
+    private int calculateFine(Date dueDate, Date returnDate) {
+        var timeDifference = returnDate.getTime() - dueDate.getTime();
+        var daysLate = timeDifference / (1000 * 60 * 60 * 24);
+        return (int) (daysLate * 2);
+    }
+
+    public void checkFines(int memberId) throws SQLException {
+        ResultSet rs = null;
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(SELECT_BY_MEMBER_ID)) {
+            statement.setInt(1, memberId);
+            rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Date returnDate = rs.getDate("return_date");
+                Date dueDate = rs.getDate("due_date");
+                int brId = rs.getInt("br_id");
+
+                if (returnDate != null && returnDate.after(dueDate)) {
+                    // Check if a fine already exists for our br_id
+                    if (!Db.fines.doesFineExistForBrId(brId)) {
+                        Fines newFine = new Fines();
+                        newFine.setBr_id(brId);
+                        newFine.setFine_total(calculateFine(dueDate, returnDate));
+                        newFine.setFine_status(true); // we make fine true as default since ret. late
+                        newFine.setMember_id(memberId);
+                        Db.fines.insertFine(newFine);
+                        System.out.println("FINE inserted for BR ID: " + brId + ", Member ID: " + memberId);
+                    } else {
+                        System.out.println("Fine already exists for BR ID: " + brId);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
 

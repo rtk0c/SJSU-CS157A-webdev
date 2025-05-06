@@ -19,6 +19,8 @@ public class MainHandler extends Handler.Abstract {
         routes.put("/book", new HttpBook());
         routes.put("/borrows", new HttpBorrows());
         routes.put("/borrows/checkout", new HttpCheckout());
+        routes.put("/fines", new HttpFine());
+        routes.put("/fines/update", new HttpFineUpdate());
     }
 
     @Override

@@ -40,7 +40,6 @@ public class HttpCheckout extends BaseHttpHandler {
         Date borrowDate = Date.valueOf(params.getValue("borrowDate"));
         Date returnDate = Date.valueOf(params.getValue("returnDate"));
         Date dueDate = Date.valueOf(params.getValue("dueDate"));
-        String borrowedBookStatus = params.getValue("borrowedBookStatus");
 
         Borrow_Returns newBR = new Borrow_Returns();
         newBR.setMember_id(memberId);
@@ -133,7 +132,7 @@ public class HttpCheckout extends BaseHttpHandler {
             <!-- https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation -->
             <label>
                 Member Id
-                <input type='text' name='memberId' value = '" + "' >
+                <input type='text' name='memberId' value = '' >
             </label>
             <label>
                 Available Copies
@@ -144,17 +143,14 @@ public class HttpCheckout extends BaseHttpHandler {
                 <input type='text' name='borrowDate' value = '\{now}' >
             </label>
             <label>
-                Due Date
+                Return Date
                 <input type='text' name='returnDate' value = '\{now}' >
             </label>
             <label>
                 Due Date
-                <input type='text' name='dueDate' value = '\{new java.sql.Date(dueVal + (daysAdd * millisPerDay))}' >
+                <input type='text' name='dueDate' value = '\{new Date(dueVal + ((long) daysAdd * millisPerDay))}' >
             </label>
-            <label>
-                Borrowed Book Status
-                <input type='text' name='borrowedBookStatus' value = 'Checked OUT...' >
-            </label>
+
             <!-- add cancel to revert back to pages members -->
             <input type = 'submit' value = 'Add Checkout' >
             </form>
