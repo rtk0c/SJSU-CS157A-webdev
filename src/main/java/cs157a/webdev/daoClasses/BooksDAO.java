@@ -9,7 +9,17 @@ import java.util.List;
 
 public class BooksDAO {
     private static final String SELECT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books WHERE book_id = ?;";
-    private static final String SORT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books " + "ORDER BY book_id;";
+    private static final String SORT_BY_ID = """
+        SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies
+        FROM books
+        ORDER BY book_id;
+        """;
+    private static final String SORT_BY_ID_FILTER = """
+        SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies
+        FROM books
+        WHERE title ILIKE ?
+        ORDER BY book_id;
+        """;
     private static final String DELETE_BOOKS_SQL = "DELETE FROM Books where book_id = ?;";
     // TODO... made id SERIAL choose whether to handle it or not, how to handle it
     private static final String UPDATE_BOOKS_SQL = "UPDATE Books SET title= ?, author = ?, page_count = ?, publisher = ?, date_published = ?, library_copies = ?, available_copies = ? where book_id = ?;";
@@ -126,9 +136,14 @@ public class BooksDAO {
     }
 
 
-    public List<Books> sortBooksAsc() throws SQLException {
+    public List<Books> sortBooksAsc(String filter) throws SQLException {
         List<Books> sortedBooks = new ArrayList<>();
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(SORT_BY_ID); ResultSet rs = statement.executeQuery()) {
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(filter == null ? SORT_BY_ID : SORT_BY_ID_FILTER)) {
+            if (filter != null) {
+                statement.setString(1, filter);
+            }
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 // similar to og method should check why this should be default...
                 Books book = new Books();

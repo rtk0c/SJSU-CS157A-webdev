@@ -8,7 +8,21 @@ import java.util.*;
 public class HttpBookList extends BaseHttpHandler {
     @Override
     protected String handleGet(Request req) throws Exception {
-        List<Books> allBooks = Db.books.sortBooksAsc();
+        var params = getHtmlFormParams(req);
+
+        String filter = params.getValue("filter");
+        String filterBannerText;
+        if (filter != null) {
+            if (!filter.startsWith("%"))
+                filter = "%" + filter;
+            if (!filter.endsWith("%"))
+                filter = filter + "%";
+            filterBannerText = STR."<p>Filter: <span>\{filter}</span></p>";
+        } else {
+            filterBannerText = "";
+        }
+        List<Books> allBooks = Db.books.sortBooksAsc(filter);
+
         //language=html
         return STR."""
             <html><body>
@@ -79,6 +93,11 @@ public class HttpBookList extends BaseHttpHandler {
             </div>
             </div>
 
+            <form method="get">
+                <input type="text" placeholder="Search for title.." name="filter">
+                <input type="submit" value="Search">
+            </form>
+            \{filterBannerText}
             <table>
             <tr>
                 <th>Book ID</th>
