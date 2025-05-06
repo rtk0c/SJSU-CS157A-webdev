@@ -80,7 +80,6 @@ public class BooksDAO {
 
             preparedStatement.executeUpdate();
             System.out.println("Books Inserted Successfully...");
-            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error Insert Books" + e);
         }
