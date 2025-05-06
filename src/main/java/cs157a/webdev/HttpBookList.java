@@ -110,8 +110,9 @@ public class HttpBookList extends BaseHttpHandler {
                 <th>Available Copies</th>
                 <th>EDIT</th>
                 <th>DELETE</th>
-                \{htmlListBooks(allBooks)}
             </tr>
+            \{htmlListBooks(allBooks)}
+            </table>
             """;
     }
 
@@ -145,7 +146,6 @@ public class HttpBookList extends BaseHttpHandler {
                             <button type=submit>Delete</button>
                         </form>
                     </td>
-                    <!-- TODO generate remaining columns (view member fines, borrowed books, etc) -->>
                 </tr>""");
         }
         return sb.toString();
