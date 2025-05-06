@@ -4,14 +4,14 @@ public class Fines {
     private int fine_id;
     private int br_id;
     private int member_id;
-    private float fine_total;
+    int fine_total;
     private String fine_status;
 
 
     public Fines()
     {}
 
-    public Fines(int fine_id, int br_id, int member_id, float fine_total, String fine_status) {
+    public Fines(int fine_id, int br_id, int member_id, int fine_total, String fine_status) {
         this.fine_id = fine_id;
         this.br_id = br_id;
         this.member_id = member_id;
@@ -19,9 +19,9 @@ public class Fines {
         this.fine_status = fine_status;
     }
 
-    public Fines(int fine_id, int br_id, float fine_total, String fine_status) {
+    public Fines(int fine_id, int br_id, int fine_total, String fine_status) {
         this.fine_id = fine_id;
-        //this.br_id = br_id;
+        this.br_id = br_id;
         this.fine_total = fine_total;
         this.fine_status = fine_status;
     }
@@ -51,11 +51,11 @@ public class Fines {
         this.member_id = member_id;
     }
 
-    public float getFine_total() {
+    public int getFine_total() {
         return fine_total;
     }
 
-    public void setFine_total(float fine_total) {
+    public void setFine_total(int fine_total) {
         this.fine_total = fine_total;
     }
 

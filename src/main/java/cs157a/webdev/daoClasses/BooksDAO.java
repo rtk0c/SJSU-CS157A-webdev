@@ -1,7 +1,6 @@
 package cs157a.webdev.daoClasses;
 
 
-
 import cs157a.webdev.model.*;
 
 import java.sql.*;
@@ -11,60 +10,29 @@ import java.util.List;
 public class BooksDAO {
     private static final String SELECT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books WHERE book_id = ?;";
     private static final String SORT_BY_ID = "SELECT book_id, title, author, page_count, publisher, date_published, library_copies, available_copies FROM books " + "ORDER BY book_id;";
-    private static final String SELECT_ALL_BOOKS = "SELECT * FROM Books";
     private static final String DELETE_BOOKS_SQL = "DELETE FROM Books where book_id = ?;";
     // TODO... made id SERIAL choose whether to handle it or not, how to handle it
     private static final String UPDATE_BOOKS_SQL = "UPDATE Books SET title= ?, author = ?, page_count = ?, publisher = ?, date_published = ?, library_copies = ?, available_copies = ? where book_id = ?;";
     private static final String INSERT_BOOKS_SQL = "INSERT INTO Books (title, author, page_count, publisher, date_published, library_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
 
-
     // establish connection
     public static Connection getConnection() throws SQLException {
         Connection con = null;
 
-        try{
+        try {
             Class.forName("org.postgresql.Driver");
-            con= DriverManager.getConnection(DbCreds.url + DbCreds.dbName, DbCreds.dbUser, DbCreds.dbPassword);
-            if(con!=null)
-            {
+            con = DriverManager.getConnection(DbCreds.url + DbCreds.dbName, DbCreds.dbUser, DbCreds.dbPassword);
+            if (con != null) {
                 System.out.println("Connected to PostgreSQL database");
 
-            }else{
+            } else {
                 System.out.println("Failed to connect to PostgreSQL database");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
         return con;
-    }
-
-
-    public List<Books> selectAllBooks() throws SQLException {
-
-        List <Books> book = new ArrayList<>();
-        try (Connection connection = getConnection();
-
-             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_BOOKS);) {
-            ResultSet rs = preparedStatement.executeQuery();
-            // (book_id, title, author, page_count, publisher, date_published, library_copies, available)
-            while (rs.next()) {
-                int book_id = rs.getInt("book_id");
-                String title = rs.getString("title");
-                String author = rs.getString("author");
-                int page_count = rs.getInt("page_count");
-                String publisher = rs.getString("publisher");
-                Date date_published = rs.getDate("date_published");
-                int library_copies = rs.getInt("library_copies");
-                int available_copies = rs.getInt("available_copies");
-
-
-                book.add(new Books(book_id, title, author, page_count, publisher, date_published, library_copies, available_copies));
-                //  (int fine_id, int br_id, float fine_total, String fine_status)
-            }
-        }
-
-        return book;
     }
 
 
@@ -76,8 +44,7 @@ public class BooksDAO {
             if (check_success) {
                 System.out.println("Books deleted with id: " + id);
                 result = true;
-            } else
-            {
+            } else {
                 System.out.println("Books deletion failed");
                 result = false;
             }
@@ -88,9 +55,7 @@ public class BooksDAO {
     }
 
 
-
-    public void insertBooks(Books book) throws SQLException
-    {
+    public void insertBooks(Books book) throws SQLException {
 //(book_id, title, author, page_count, publisher, date_published, library_copies, available)
         try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BOOKS_SQL);) {
 
@@ -131,11 +96,39 @@ public class BooksDAO {
         return check_success;
     }
 
+
+    // TODO... FINISH CHECK METHOD
+    public Boolean updateBooksAvailable(Books book) throws SQLException {
+        boolean check_success = true;
+        //(book_id, title, author, page_count, publisher, date_published, library_copies, available)
+        // can change to just upgrade books available
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_BOOKS_SQL);) {
+
+            if (book.getAvailable_copies() <= 0) {
+                check_success = false;
+                return check_success;
+            }
+
+            statement.setString(1, book.getTitle());
+            statement.setString(2, book.getAuthor());
+            statement.setInt(3, book.getPage_count());
+            statement.setString(4, book.getPublisher());
+            statement.setDate(5, book.getDate_published());
+            statement.setInt(6, book.getLibrary_copies());
+            statement.setInt(7, (book.getAvailable_copies() - 1));
+            //System.out.println(book.getAvailable_copies()-1);
+            statement.setInt(8, book.getBook_id());
+
+            statement.executeUpdate();
+
+        }
+        return check_success;
+    }
+
+
     public List<Books> sortBooksAsc() throws SQLException {
         List<Books> sortedBooks = new ArrayList<>();
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(SORT_BY_ID);
-             ResultSet rs = statement.executeQuery()) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(SORT_BY_ID); ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
                 // similar to og method should check why this should be default...
                 Books book = new Books();
@@ -177,7 +170,7 @@ public class BooksDAO {
                 book.setLibrary_copies(resultSet.getInt("library_copies"));
                 book.setAvailable_copies(resultSet.getInt("available_copies"));
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
@@ -185,40 +178,4 @@ public class BooksDAO {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-/*
-// Testing methods
-    public static void main(String[] args) throws SQLException {
-        BooksDAO booksDAO = new BooksDAO();
-        Books book = new Books();
-
-        book.setBook_id(1);
-        book.setTitle("MYBOOKTITLE");
-        book.setAuthor("MYAUTHOR");
-        book.setPage_count(100);
-        book.setPublisher("MYPUBLISHER");
-
-        LocalDate signupLocalDate = LocalDate.now();
-        Date signupDate = Date.valueOf(signupLocalDate);
-        book.setDate_published(signupDate);
-
-        book.setLibrary_copies(4);
-        book.setAvailable_copies(4);
-
-        //(book_id, title, author, page_count, publisher, date_published, library_copies, available)
-        booksDAO.insertBooks(book);
-
-    }
-*/
-
-
 
