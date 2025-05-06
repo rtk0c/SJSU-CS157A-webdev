@@ -20,12 +20,12 @@ public class HttpBook extends BaseHttpHandler {
         // find out about labels being printed
         // css make ->> https://www.w3schools.com/css/tryit.asp?filename=trycss_forms
 
-        MultiMap<String> params = UrlEncoded.decodeQuery(req.getHttpURI().getQuery());
+        var params = getHtmlFormParams(req);
 
         Books book;
         String bookIdField;
 
-        var bookId = params.getString("bookId");
+        var bookId = params.getValue("bookId");
         if (bookId == null) {
             // Insert
             book = new Books(); // load dummy values
@@ -33,7 +33,7 @@ public class HttpBook extends BaseHttpHandler {
         } else {
             // Update
             book = Db.books.getBookById(Integer.parseInt(bookId));
-            bookIdField = STR."<input type='hidden' id='bookId' name='bookId' value='\{book.getBook_id()}'>";
+            bookIdField = STR."<input type='hidden' name='bookId' value='\{book.getBook_id()}'>";
         }
 
         //language=html
@@ -107,9 +107,17 @@ public class HttpBook extends BaseHttpHandler {
         </html>""";
     }
 
+    private String get(MultiMap<String> c, String key, String def) {
+        var res = c.getValue(key);
+        if (res == null) {
+            return def;
+        }
+        return res;
+    }
+
     @Override
     protected String handlePost(Request req) throws Exception {
-        MultiMap<String> params = UrlEncoded.decodeQuery(req.getHttpURI().getQuery());
+        var params = getHtmlFormParams(req);
 
         String title = params.getValue("title");
         String author = params.getValue("author");
@@ -128,7 +136,7 @@ public class HttpBook extends BaseHttpHandler {
         b.setLibrary_copies(Integer.parseInt(libraryCopies));
         b.setAvailable_copies(Integer.parseInt(availableCopies));
 
-        var bookId = params.getString("bookId");
+        var bookId = params.getValue("bookId");
         if (bookId == null) {
             // Insert
             Db.books.insertBooks(b);
@@ -144,7 +152,7 @@ public class HttpBook extends BaseHttpHandler {
 
     @Override
     protected String handleDelete(Request req) throws Exception {
-        MultiMap<String> params = UrlEncoded.decodeQuery(req.getHttpURI().getQuery());
+        var params = getHtmlFormParams(req);
 
         String bookRemove = params.getValue("bookId");
         int bookId = Integer.parseInt(bookRemove);

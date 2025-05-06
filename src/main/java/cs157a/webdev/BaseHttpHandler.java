@@ -5,6 +5,9 @@ import org.eclipse.jetty.io.*;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.*;
 
+import java.io.*;
+import java.nio.charset.*;
+
 public abstract class BaseHttpHandler extends Handler.Abstract {
     // TODO is a single Handler only invoked on a single thread?
     // In any case, we don't care since demo project and like 0 (literally) concurrency
@@ -52,5 +55,14 @@ public abstract class BaseHttpHandler extends Handler.Abstract {
 
     protected String handleDelete(Request req) throws Exception {
         return null;
+    }
+
+    // NOTE: if the same params exists in both path part and body, it will appear twice
+    // for example, in our code, /book?bookId=12 has is a form for updating the book details; the form has an input for
+    // bookId, so this value is returned both in path part and body.
+    public static MultiMap<String> getHtmlFormParams(Request req) throws IOException {
+        var res = UrlEncoded.decodeQuery(req.getHttpURI().getQuery());
+        UrlEncoded.decodeTo(Content.Source.asString(req), res, StandardCharsets.UTF_8);
+        return res;
     }
 }

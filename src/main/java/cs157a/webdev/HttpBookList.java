@@ -1,11 +1,8 @@
 package cs157a.webdev;
 
 import cs157a.webdev.model.*;
-import org.eclipse.jetty.io.*;
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.util.*;
 
-import java.io.*;
 import java.util.*;
 
 public class HttpBookList extends BaseHttpHandler {
@@ -20,7 +17,7 @@ public class HttpBookList extends BaseHttpHandler {
             <style>
             table {
               border: 1px;
-              margin-left: auto;\s
+              margin-left: auto;
               margin-right: auto;
               width: 90%;
               max-width: 1000px;
@@ -51,7 +48,7 @@ public class HttpBookList extends BaseHttpHandler {
               text-align: center;
               padding: 12px;
               text-decoration: none;
-              font-size: 18px;\s
+              font-size: 18px;
               line-height: 25px;
               border-radius: 4px;
             }
@@ -78,12 +75,10 @@ public class HttpBookList extends BaseHttpHandler {
             <div class="header">
                 <div class="header-right">
                 <a class="active" href="/">Home</a>
-                <a href="/books/add">Add Book</a>
+                <a href="/book">Add Book</a>
             </div>
             </div>
-            
-            <!-- TODO... Style and implent script to search by title? -->
-            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+
             <table>
             <tr>
                 <th>Book ID</th>
@@ -120,13 +115,13 @@ public class HttpBookList extends BaseHttpHandler {
                     <td>\{book.getLibrary_copies()}</td>
                     <td>\{book.getAvailable_copies()}</td>
                     <td>
-                        <form action=/books/update method=get>
+                        <form action='/book' method='get'>
                             <input type=hidden name=bookId value=\{book.getBook_id()}>
                             <button type=submit>Update</button>
                         </form>
                     </td>
                     <td>
-                        <form action=books/delete method=post>
+                        <form action='/book' method='post'>
                             <input type=hidden name=bookId value=\{book.getBook_id()}>
                             <button type=submit>Delete</button>
                         </form>

@@ -2,14 +2,13 @@ package cs157a.webdev;
 
 import cs157a.webdev.model.*;
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.util.*;
 
 import java.util.*;
 
 public class HttpBorrows extends BaseHttpHandler {
     @Override
     protected String handleGet(Request req) throws Exception {
-        MultiMap<String> params = UrlEncoded.decodeQuery(req.getHttpURI().getQuery());
+        var params = getHtmlFormParams(req);
 
         String memberIdParam = params.getValue("memberId");
         int memberId = Integer.parseInt(memberIdParam);
@@ -28,7 +27,7 @@ public class HttpBorrows extends BaseHttpHandler {
             <title>Borrws & Returns | Library management</title>
             <style>
             table {
-                margin-left: auto;\s
+                margin-left: auto;
                 margin-right: auto;
                 width: 90%;
                 max-width: 1000px;
@@ -54,7 +53,7 @@ public class HttpBorrows extends BaseHttpHandler {
                 text-align: center;
                 padding: 12px;
                 text-decoration: none;
-                font-size: 18px;\s
+                font-size: 18px;
                 border-radius: 4px;
             }
             .header a.active {
