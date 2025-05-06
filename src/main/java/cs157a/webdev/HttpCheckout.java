@@ -56,9 +56,28 @@ public class HttpCheckout extends BaseHttpHandler {
         newBR.setBorrowed_book_status(borrowedBookStatus);
         //newBR.setAvailable_copies(availableCopies);
 
-        Db.borrows.insertBR(newBR);
-        responseType = HTTP_REDIRECT;
-        return "/members";
+        Books book = Db.books.getBookById(bookId); // Update books value after we checked out books
+        if (Db.books.updateBooksAvailable(book)) {
+            Db.borrows.insertBR(newBR);
+            responseType = HTTP_REDIRECT;
+            return "/members";
+        } else {
+            // On fail go to our error page for case 0 available
+            //language=html
+            return """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                <title>Fail Page</title>
+                </head>
+                <body>
+                    <p>Book add fail page</p>
+                    <a href="/books">No More Books Available Try again/another by clicking here :)))</a>
+                </body>
+                </html>
+                """;
+        }
+
     }
 
     public String htmlCheckoutBook(Books book) {
