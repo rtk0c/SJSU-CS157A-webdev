@@ -5,14 +5,14 @@ import org.eclipse.jetty.server.*;
 
 import java.util.*;
 
-public class HttpBorrows extends BaseHttpHandler {
+public class HttpFine extends BaseHttpHandler {
     @Override
     protected String handleGet(Request req) throws Exception {
         var params = getHtmlFormParams(req);
 
-        String memberIdParam = params.getValue("memberId");
-        int memberId = Integer.parseInt(memberIdParam);
-        List<Borrow_Returns> memBR = Db.borrows.sortBRAsc(memberId);
+        String brIdParam = params.getValue("brId");
+        int brId = Integer.parseInt(brIdParam);
+        List<Fines> memFin = (List<Fines>) Db.fines.getFineById(brId);
 
         // https://www.w3schools.com/html/tryit.asp?filename=tryhtml_table_border
         // Use this to make tables recall header vs cell data
@@ -24,7 +24,7 @@ public class HttpBorrows extends BaseHttpHandler {
             <html lang="en">
             <body>
             <head>
-            <title>Borrws & Returns | Library management</title>
+            <title>Fines infomation</title>
             <style>
             table {
                 margin-left: auto;
@@ -77,13 +77,12 @@ public class HttpBorrows extends BaseHttpHandler {
             </div>
             <table>
                 <tr>
-                    <th>Member ID</th>
-                    <th>Book ID</th>
-                    <th>Borrow Date</th>
-                    <th>Return Date</th>
-                    <th>Due Date</th>
+                    <th>BR ID</th>
+                    <th>Fine Total</th>
+                    <th>Fine Status</th>
+
                 </tr>
-                \{htmlBRMainTable(memBR)}
+                \{htmlBRMainTable(memFin)}
             </table>
             """;
     }
@@ -93,22 +92,21 @@ public class HttpBorrows extends BaseHttpHandler {
 
 
 
-    private String htmlBRMainTable(List<Borrow_Returns> allBR) {
-        if (allBR == null) {
+    private String htmlBRMainTable(List<Fines> allFin) {
+        if (allFin == null) {
             return "<h1>No members books are found.</h1>";
         }
 
         var sb = new StringBuilder();
-        for (Borrow_Returns br : allBR) {
+        for (Fines fine :  allFin) {
             sb.append(STR."""
                 <tr>
 
 
-                <td>\{br.getBook_id()}</td>
-                <td>\{br.getMember_id()}</td>
-                <td>\{br.getBorrow_date()}</td>
-                <td>\{br.getReturn_date()}</td>
-                <td>\{br.getDue_date()}</td>
+                <td>\{fine.getFine_status()}</td>
+                <td>\{fine.getFine_total()}</td>
+                <td>\{fine.getFine_status()}</td>
+
 
 
                 </tr>""");

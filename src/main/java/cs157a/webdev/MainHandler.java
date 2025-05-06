@@ -14,10 +14,11 @@ public class MainHandler extends Handler.Abstract {
         routes.put("/", new HttpLandingPage());
         // Routes should never have a trailing slash
         routes.put("/members", new HttpMembers());
+        routes.put("/member", new HttpMember());
         routes.put("/books", new HttpBookList());
         routes.put("/book", new HttpBook());
         routes.put("/borrows", new HttpBorrows());
-        routes.put("/borrows/checkout", new HttpBorrows());
+        routes.put("/borrows/checkout", new HttpCheckout());
     }
 
     @Override

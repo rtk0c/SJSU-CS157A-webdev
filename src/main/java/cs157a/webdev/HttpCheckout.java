@@ -2,14 +2,13 @@ package cs157a.webdev;
 
 import cs157a.webdev.model.*;
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.util.*;
 
 import java.sql.*;
 
 public class HttpCheckout extends BaseHttpHandler {
     @Override
     protected String handleGet(Request req) throws Exception {
-        MultiMap<String> params = UrlEncoded.decodeQuery(req.getHttpURI().getQuery());
+        var params = getHtmlFormParams(req);
 
         String bookIdToEdit = params.getValue("bookId");
         int bookId = Integer.parseInt(bookIdToEdit);
@@ -23,7 +22,7 @@ public class HttpCheckout extends BaseHttpHandler {
 
     @Override
     protected String handlePost(Request req) throws Exception {
-        MultiMap<String> params = UrlEncoded.decodeQuery(req.getHttpURI().getQuery());
+        var params = getHtmlFormParams(req);
 
         //String updateId = params.getValue("bookId");
 
@@ -38,27 +37,41 @@ public class HttpCheckout extends BaseHttpHandler {
         }
 
         int bookId = Integer.parseInt(params.getValue("bookId"));
-        String title = params.getValue("bookName");
         Date borrowDate = Date.valueOf(params.getValue("borrowDate"));
         Date returnDate = Date.valueOf(params.getValue("returnDate"));
         Date dueDate = Date.valueOf(params.getValue("dueDate"));
         String borrowedBookStatus = params.getValue("borrowedBookStatus");
-        int availableCopies = Integer.parseInt(params.getValue("availableCopies"));
 
         Borrow_Returns newBR = new Borrow_Returns();
-
         newBR.setMember_id(memberId);
         newBR.setBook_id(bookId);
-        //newBR.setTitle(title);
         newBR.setBorrow_date(borrowDate);
         newBR.setReturn_date(returnDate);
         newBR.setDue_date(dueDate);
-        newBR.setBorrowed_book_status(borrowedBookStatus);
-        //newBR.setAvailable_copies(availableCopies);
+        //newBR.setBorrowed_book_status(borrowedBookStatus);
 
-        Db.borrows.insertBR(newBR);
-        responseType = HTTP_REDIRECT;
-        return "/members";
+        Books book = Db.books.getBookById(bookId); // Update books value after we checked out books
+        if (Db.books.updateBooksAvailable(book)) {
+            Db.borrows.insertBR(newBR);
+            responseType = HTTP_REDIRECT;
+            return "/members";
+        } else {
+            // On fail go to our error page for case 0 available
+            //language=html
+            return """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                <title>Fail Page</title>
+                </head>
+                <body>
+                    <p>Book add fail page</p>
+                    <a href="/books">No More Books Available Try again/another by clicking here :)))</a>
+                </body>
+                </html>
+                """;
+        }
+
     }
 
     public String htmlCheckoutBook(Books book) {
@@ -142,7 +155,7 @@ public class HttpCheckout extends BaseHttpHandler {
                 Borrowed Book Status
                 <input type='text' name='borrowedBookStatus' value = 'Checked OUT...' >
             </label>
-            // add cancel to revert back to pages members
+            <!-- add cancel to revert back to pages members -->
             <input type = 'submit' value = 'Add Checkout' >
             </form>
             </body>

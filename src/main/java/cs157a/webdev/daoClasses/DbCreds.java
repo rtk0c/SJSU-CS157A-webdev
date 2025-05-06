@@ -11,9 +11,9 @@ public class DbCreds {
 
     static {
         url = or(System.getenv("CS157A_WEBDEV_DB_URL"), "jdbc:postgresql://localhost:5432/");
-        dbName = or(System.getenv("CS157A_WEBDEV_DB_NAME"), "cs157a_webdev_db");
-        dbUser = or(System.getenv("CS157A_WEBDEV_DB_USER"), "dbuser");
-        dbPassword = or(System.getenv("CS157A_WEBDEV_DB_PASSWORD"), "password");
+        dbName = or(System.getenv("CS157A_WEBDEV_DB_NAME"), "lib");
+        dbUser = or(System.getenv("CS157A_WEBDEV_DB_USER"), "postgres");
+        dbPassword = or(System.getenv("CS157A_WEBDEV_DB_PASSWORD"), "000000");
     }
 
     private static String or(String a, String b) {
