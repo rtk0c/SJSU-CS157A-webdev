@@ -22,17 +22,15 @@ CREATE TABLE Borrow_Returns (
   book_id INT NOT NULL,
   member_id INT NOT NULL,
   borrow_date DATE NOT NULL,
-  return_date DATE NOT NULL,
+  return_date DATE,
   due_date DATE NOT NULL,
-  borrowed_book_status VARCHAR NOT NULL,
   FOREIGN KEY (book_id) REFERENCES Books(book_id),
   FOREIGN KEY (member_id) REFERENCES Members(member_id)
 );
 
 CREATE TABLE Fines (
-  fine_id SERIAL PRIMARY KEY,
-  br_id INT NOT NULL,
-  fine_total DECIMAL NOT NULL,
-  fine_status VARCHAR(45) NOT NULL,
+  br_id INT NOT NULL PRIMARY KEY,
+  fine_total DECIMAL(5,2) NOT NULL,
+  fine_status BOOLEAN NOT NULL,
   FOREIGN KEY (br_id) REFERENCES Borrow_Returns(br_id)
 );

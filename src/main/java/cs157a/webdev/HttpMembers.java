@@ -2,8 +2,13 @@ package cs157a.webdev;
 
 import cs157a.webdev.model.*;
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.util.*;
+
 import java.sql.*;
 
+/**
+ * Members directory
+ */
 public class HttpMembers extends BaseHttpHandler {
     @Override
     protected String handleGet(Request req) throws Exception {
@@ -80,6 +85,11 @@ public class HttpMembers extends BaseHttpHandler {
             </body></html>
             """;
     }
+
+    // https://www.w3schools.com/html/tryit.asp?filename=tryhtml_table_border
+    // Use this to make tables recall header vs cell data
+    // See example servet code 9.18
+    // Make main bar to navigate to info
 
     private String htmlListMembers() throws SQLException {
         var sb = new StringBuilder();

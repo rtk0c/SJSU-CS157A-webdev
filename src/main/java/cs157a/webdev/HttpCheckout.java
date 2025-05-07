@@ -40,6 +40,7 @@ public class HttpCheckout extends BaseHttpHandler {
         Date borrowDate = Date.valueOf(params.getValue("borrowDate"));
         Date returnDate = Date.valueOf(params.getValue("returnDate"));
         Date dueDate = Date.valueOf(params.getValue("dueDate"));
+        String borrowedBookStatus = params.getValue("borrowedBookStatus");
 
         Borrow_Returns newBR = new Borrow_Returns();
         newBR.setMember_id(memberId);

@@ -109,7 +109,6 @@ public class HttpBookList extends BaseHttpHandler {
                 <th>Available Copies</th>
                 <th>EDIT</th>
                 <th>DELETE</th>
-                <th>Checkout Book</th>
             </tr>
             \{htmlListBooks(allBooks)}
             </table>
@@ -143,16 +142,13 @@ public class HttpBookList extends BaseHttpHandler {
                     <td>
                         <button onclick='deleteThisBook(this)' data-bookid='\{book.getBook_id()}'>Delete</button>
                     </td>
-
                     <td>
-                         <form action='borrows/checkout' method='get'>
+                         <form action='/borrows/checkout' method='get'>
                             <input type=hidden name=bookId value='\{book.getBook_id()}' >
                             <button type=submit>Check Out</button>
                         </form>
                     </td>
-
-
-                    </tr>""");
+                </tr>""");
         }
         return sb.toString();
     }

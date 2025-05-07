@@ -10,25 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Borrow_ReturnsDAO {
-
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final String INSERT_BR_SQL = "INSERT INTO Borrow_Returns (member_id, book_id, borrow_date, return_date, due_date) VALUES (?, ?, ?, ?, ?);";
     private static final String JOIN_TABLES = "SELECT br.br_id, m.member_id, b.book_id, br.borrow_date, br.return_date, br.due_date FROM Borrow_Returns br INNER JOIN Members m ON br.member_id = m.member_id INNER JOIN Books b ON br.book_id = b.book_id WHERE br.member_id = ? ORDER BY br.br_id;";
     private static final String SELECT_BY_MEMBER_ID = "SELECT br_id, member_id, book_id, borrow_date, due_date, return_date  FROM borrow_returns WHERE member_id = ?";
  // private static final String UPDATE_BORROW_RETURN_STATUS = "UPDATE borrow_returns SET borrowed_book_status = ? WHERE br_id = ?";
 
-/*
-    public boolean updateBorrowReturnStatus(int brId, Boolean newStatus) throws SQLException {
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_BORROW_RETURN_STATUS)) {
-            statement.setBoolean(1, newStatus);
-            statement.setInt(2, brId);
-            int rowsAffected = statement.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    */
+
     // establish connection
     public static Connection getConnection() throws SQLException {
         Connection con = null;
@@ -81,7 +69,6 @@ public class Borrow_ReturnsDAO {
                 br.setBorrow_date(rs.getDate("borrow_date"));
                 br.setReturn_date(rs.getDate("return_date"));
                 br.setDue_date(rs.getDate("due_date"));
-
 
                 sortedBR.add(br);
             }
