@@ -6,14 +6,6 @@ public class Fines {
     private boolean fine_status;
     int member_id;
 
-    public boolean getFine_status() {
-        return fine_status;
-    }
-
-    public void setFine_status(boolean fine_status) {
-        this.fine_status = fine_status;
-    }
-
     public int getMember_id() {
         return member_id;
     }
@@ -31,13 +23,20 @@ public class Fines {
         this.fine_status = fine_status;
     }
 
-
     public int getBr_id() {
         return br_id;
     }
 
     public void setBr_id(int br_id) {
         this.br_id = br_id;
+    }
+
+    public boolean getFine_status() {
+        return fine_status;
+    }
+
+    public void setFine_status(boolean fine_status) {
+        this.fine_status = fine_status;
     }
 
     public int getFine_total() {

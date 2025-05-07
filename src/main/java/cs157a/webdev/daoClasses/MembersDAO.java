@@ -13,9 +13,9 @@ public class MembersDAO {
     private static final String SORT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members ORDER BY member_id;";
     private static final String sql = "SELECT COUNT(*) FROM members WHERE member_id = ?;";
     private static final String SELECT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members WHERE member_id = ?;";
-    private static final String DELETE_FINES_MEMBER_ID = "DELETE FROM Fines where member_id = ?;"; // estep 1
-    private static final String DELETE_BR_MEMBER_ID = "DELETE FROM Borrow_returns where member_id = ?;"; // estep 2
-    private static final String DELETE_MEMBERS_SQL = "DELETE FROM Members where member_id = ?;"; // estep 3
+    private static final String DELETE_FINES_MEMBER_ID = "DELETE FROM Fines where member_id = ?;";
+    private static final String DELETE_BR_MEMBER_ID = "DELETE FROM Borrow_returns where member_id = ?;";
+    private static final String DELETE_MEMBERS_SQL = "DELETE FROM Members where member_id = ?;";
 
 
     // establish connection
@@ -102,11 +102,6 @@ public class MembersDAO {
     }
 
 
-
-
-
-
-
     public Members getMemberById(int id) throws SQLException {
         ResultSet resultSet = null;
         Members member = null;
@@ -144,27 +139,6 @@ public class MembersDAO {
 
         }
         return check_success;
-    }
-
-    // Most likely not needed
-    public List<Members> selectAllMembers() throws SQLException {
-
-        List <Members> mem = new ArrayList<>();
-        try (Connection connection = getConnection();PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_MEMBERS);)
-        {
-            ResultSet rs = preparedStatement.executeQuery();
-
-            while (rs.next()) {
-                int memberId = rs.getInt("member_id");
-                String firstName = rs.getString("first_name");
-                String lastName = rs.getString("last_name");
-                String email = rs.getString("email");
-                Date date = rs.getDate("membership_date");
-                mem.add(new Members(memberId, firstName, lastName, email, date));
-            }
-        }
-        System.out.println(mem);
-        return mem;
     }
 
     public List<Members> sortMembersAsc() throws SQLException {
@@ -211,29 +185,3 @@ public class MembersDAO {
     }
 
 }
-
-    /*public static void main(String[] args) throws SQLException {
-        MembersDAO membersDAO = new MembersDAO();
-        Members newMember = new Members();
-        newMember.setMember_id(8);
-        newMember.setFirst_name("Tedddster");
-        newMember.setLast_name("Usddttttder1");
-        newMember.setEmail("test1.ddusejknkr@example.com");
-        LocalDate signupLocalDate = LocalDate.now();
-        Date signupDate = Date.valueOf(signupLocalDate);
-        newMember.setMembership_date(signupDate);
-
-        // Call the insertMember method
-        //membersDAO.insertMember(newMember);
-        //membersDAO.deleteMember(2);
-
-
-        membersDAO.selectAllMembers();
-
-    }
-*/
-
-
-
-
-

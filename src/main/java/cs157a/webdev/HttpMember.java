@@ -6,28 +6,23 @@ import org.eclipse.jetty.server.*;
 import java.sql.*;
 import java.time.*;
 
-public class HttpFineUpdate extends BaseHttpHandler {
+public class HttpMember extends BaseHttpHandler {
     @Override
     protected String handleGet(Request req) throws Exception {
         var params = getHtmlFormParams(req);
 
-        Fines fine;
-        String brIdField;
+        Members member;
+        String memberIdField;
 
-        var brId = params.getValue("brId");
         var memberId = params.getValue("memberId");
-
-        if (brId == null) {
+        if (memberId == null) {
             // Insert
-            fine = new Fines(); // load dummy values
-            brIdField = "";
+            member = new Members(); // load dummy values
+            memberIdField = "";
         } else {
             // Update
-            //fine = Db.fines.getFineById(Integer.parseInt(brId));
-            fine = Db.fines.getFineById(Integer.parseInt(brId)); // use br_id and start vs using old member in og code!
-            // Was issue when want to edit more then 1 fine
-
-            brIdField = STR."<input type='hidden' name='brId' value='\{fine.getBr_id()}'>";
+            member = Db.members.getMemberById(Integer.parseInt(memberId));
+            memberIdField = STR."<input type='hidden' name='memberId' value='\{member.getMember_id()}'>";
         }
 
         // both ID and Name have same value -> getElementById
@@ -43,7 +38,7 @@ public class HttpFineUpdate extends BaseHttpHandler {
         return STR."""
             <!DOCTYPE html>
             <html lang='en'><body><head>
-            <title>Update Fines | Library Management</title>
+            <title>Update member | Library Management</title>
             <style>
             input[type=text], select {
               width: 100%;
@@ -73,28 +68,24 @@ public class HttpFineUpdate extends BaseHttpHandler {
               padding: 20px;
             }
             </style>
+
             </head><body>
-            <h2>Update Fine</h2>
-            <form action='/fines/update' method='post'>
-                \{brIdField}
+            <h2>Update User</h2>
+            <form action='/member' method='post'>
+                \{memberIdField}
                 <!-- <label for="memberId">First name:</label><br> -->
                 <div>
-
-                    <input type='hidden' id='memberId' name='memberId' value='\{memberId}'>
+                    <h3>First Name</h3>
+                    <input type='text' id='firstName' name='firstName' value='\{member.getFirst_name()}'>
                     <!-- <label for="firstName">First name:</label><br> -->
                 </div>
                 <div>
-                    <h3>BR ID</h3>
-                    <input type='text' id='brId' name='brId' value='\{fine.getBr_id()}'>
-                    <!-- <label for="firstName">First name:</label><br> -->
+                    <h3>Last Name</h3>
+                    <input type='text' id='lastName' name='lastName' value='\{member.getLast_name()}'>
                 </div>
                 <div>
-                    <h3>Fine Total</h3>
-                    <input type='text' id='fineTotal' name='fineTotal' value='\{fine.getFine_total()}'>
-                </div>
-                <div>
-                    <h3>Fine Status</h3>
-                    <input type='text' id='fineStatus' name='fineStatus' value='\{fine.getFine_status()}'>
+                    <h3>Email</h3>
+                    <input type='text' id='email' name='email' value='\{member.getEmail()}'>
                     <!-- <label for="email">email:</label><br> -->
                 </div>
                 <!-- add cancel to revert back to pages members -->
@@ -109,29 +100,49 @@ public class HttpFineUpdate extends BaseHttpHandler {
     protected String handlePost(Request req) throws Exception {
         var params = getHtmlFormParams(req);
 
-        String updateId = params.getValue("brId");
-        String memberId = params.getValue("memberId");
-        System.out.println(updateId + " " + memberId);
-        int fineTotal = Integer.parseInt(params.getValue("fineTotal"));
-        boolean fineStatus = Boolean.parseBoolean((params.getValue("fineStatus")));
+        String updateId = params.getValue("memberId");
 
-        Fines newFine = new Fines();
-        newFine.setFine_total(fineTotal);
-        newFine.setFine_status(fineStatus);
+        String firstName = params.getValue("firstName");
+        String lastName = params.getValue("lastName");
+        String email = params.getValue("email");
+
+        Members newMember = new Members();
+        newMember.setFirst_name(firstName);
+        newMember.setLast_name(lastName);
+        newMember.setEmail(email);
+        newMember.setMembership_date(Date.valueOf(LocalDate.now()));
 
         if (updateId == null) {
-            Db.fines.insertFine(newFine);
+            Db.members.insertMember(newMember);
         } else {
-            newFine.setBr_id(Integer.parseInt(updateId));
-            System.out.println(newFine); ;
-            boolean updated = Db.fines.updateFine(newFine);
+            newMember.setMember_id(Integer.parseInt(updateId));
+            boolean updated = Db.members.updateMember(newMember);
             if (!updated) {
                 throw new RuntimeException("ERROR in update Post");
             }
         }
 
         responseType = HTTP_REDIRECT;
-        return "http://localhost:9999/fines?memberId=" + memberId; // why path didn't work or my browser is just busted :)
+        return "/members";
     }
 
+    @Override
+    protected String handleDelete(Request req) throws Exception {
+        var params = getHtmlFormParams(req);
+
+        String memRemove = params.getValue("memberId");
+
+        boolean deleted = Db.members.deleteMember(Integer.parseInt(memRemove));
+        if (!deleted) {
+            // for debugging right now
+            System.out.println("ERROR in delete Post");
+            throw new RuntimeException("Member not found");
+        }
+
+        responseType = HTTP_REDIRECT;
+        return "/members";
+
+        // relatively similar to //add
+
+    }
 }
