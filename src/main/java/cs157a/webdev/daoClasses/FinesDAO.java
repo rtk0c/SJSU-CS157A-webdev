@@ -10,10 +10,16 @@ public class FinesDAO {
 
     // TODO... made id SERIAL choose whether to handle it or not, how to handle it
     private static final String UPDATE_FINES_SQL = "UPDATE Fines SET fine_total = ?, fine_status = ? WHERE br_id = ?;";
-    private static final String SELECT_BY_ID = "SELECT * FROM Fines WHERE member_id = ? ORDER BY br_id";
+    private static final String SELECT_BY_ID = """
+    SELECT Members.member_id, fine_total, fine_status, Borrow_Returns.br_id FROM Fines
+        JOIN Borrow_Returns ON Fines.br_id = Borrow_Returns.br_id
+        JOIN Members ON Borrow_Returns.member_id = Members.member_id
+    WHERE Members.member_id = ?
+    ORDER BY Borrow_Returns.br_id;
+        """;
     private static final String SELECT_FINE_BY_BR_ID_FOR_UPDATE = "SELECT * FROM Fines WHERE br_id = ?";
     private static final String SELECT_FINE_BY_BR_ID = "SELECT COUNT(*) FROM fines WHERE br_id = ?";
-    private static final String INSERT_FINE = "INSERT INTO fines (br_id, fine_total, fine_status, member_id) VALUES (?, ?, ?, ?)";
+    private static final String INSERT_FINE = "INSERT INTO fines (br_id, fine_total, fine_status) VALUES (?, ?, ?)";
 
     public boolean doesFineExistForBrId(int brId) throws SQLException {
         ResultSet rs = null;
@@ -34,8 +40,6 @@ public class FinesDAO {
             statement.setInt(1, fine.getBr_id());
             statement.setInt(2, fine.getFine_total());
             statement.setBoolean(3, fine.getFine_status());
-            statement.setInt(4, fine.getMember_id());
-            System.out.println("INSERT INTO Fines " + fine.getBr_id() + " " + fine.getFine_total() + "  " + fine.getFine_status() + " " + fine.getMember_id());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

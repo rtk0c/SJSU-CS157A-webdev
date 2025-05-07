@@ -109,6 +109,7 @@ public class HttpBookList extends BaseHttpHandler {
                 <th>Available Copies</th>
                 <th>EDIT</th>
                 <th>DELETE</th>
+                <th>Checkout</th>
             </tr>
             \{htmlListBooks(allBooks)}
             </table>
