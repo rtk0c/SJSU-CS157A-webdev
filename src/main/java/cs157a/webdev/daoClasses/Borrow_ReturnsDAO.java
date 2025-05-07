@@ -5,6 +5,7 @@ import cs157a.webdev.model.*;
 
 import java.sql.*;
 import java.text.*;
+import java.time.temporal.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,10 +95,13 @@ public class Borrow_ReturnsDAO {
 
     private int calculateFine(Date dueDate, Date returnDate) {
         var timeDifference = returnDate.getTime() - dueDate.getTime();
-        var daysLate = timeDifference / (1000 * 60 * 60 * 24);
-        return (int) (daysLate * 2);
+        var daysLate = timeDifference / (1000 * 60 * 60 * 24.0);
+        long roundedDaysLate = Math.round(daysLate);
+        //System.out.println(timeDifference+"t");
+        //System.out.println(daysLate+"d");
+        //System.out.println(roundedDaysLate + "L");
+        return (int) (roundedDaysLate * 2);
     }
-
     public void checkFines(int memberId) throws SQLException {
         ResultSet rs = null;
 

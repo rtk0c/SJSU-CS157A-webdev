@@ -9,11 +9,13 @@ import java.util.List;
 public class MembersDAO {
     private static final String INSERT_MEMBERS_SQL = "INSERT INTO Members (first_name, last_name, email, membership_date) VALUES (?, ?, ?, ?);";
     private static final String SELECT_ALL_MEMBERS = "SELECT * FROM Members";
-    private static final String DELETE_MEMBERS_SQL = "DELETE FROM Members where member_id = ?;";
     private static final String UPDATE_MEMBERS_SQL = "UPDATE Members SET first_name = ?, last_name= ?, email =? where member_id = ?;";
-    private static final String SELECT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members WHERE member_id = ?;";
     private static final String SORT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members ORDER BY member_id;";
     private static final String sql = "SELECT COUNT(*) FROM members WHERE member_id = ?;";
+    private static final String SELECT_BY_ID = "SELECT member_id, first_name, last_name, email, membership_date FROM members WHERE member_id = ?;";
+    private static final String DELETE_FINES_MEMBER_ID = "DELETE FROM Fines where member_id = ?;"; // estep 1
+    private static final String DELETE_BR_MEMBER_ID = "DELETE FROM Borrow_returns where member_id = ?;"; // estep 2
+    private static final String DELETE_MEMBERS_SQL = "DELETE FROM Members where member_id = ?;"; // estep 3
 
 
     // establish connection
@@ -55,22 +57,55 @@ public class MembersDAO {
 
     public boolean deleteMember(int id) throws SQLException {
         boolean result = false;
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_MEMBERS_SQL);) {
-            statement.setInt(1, id);
-            boolean check_success = statement.executeUpdate() > 0;
-            if (check_success) {
-                System.out.println("Member deleted with id: " + id);
+        Connection connection = null;
+        PreparedStatement preparedStatement1 = null;
+        PreparedStatement preparedStatement2 = null;
+        PreparedStatement preparedStatement3 = null;
+
+        System.out.println("Member Deleted Successfully...");
+
+        try {
+
+            connection = getConnection();
+
+            connection.setAutoCommit(false); // Start transaction!
+
+            preparedStatement1 = connection.prepareStatement(DELETE_FINES_MEMBER_ID);
+            preparedStatement1.setInt(1, id);
+            preparedStatement1.executeUpdate();
+
+
+            preparedStatement2 = connection.prepareStatement(DELETE_BR_MEMBER_ID);
+            preparedStatement2.setInt(1, id);
+            preparedStatement2.executeUpdate();
+
+            preparedStatement3 = connection.prepareStatement(DELETE_MEMBERS_SQL);
+            preparedStatement3.setInt(1, id);
+            int check3 = preparedStatement3.executeUpdate();
+
+            if(check3 >0){
+
                 result = true;
-            } else
-            {
-                System.out.println("Member deletion failed");
-                result = false;
+                connection.commit();
+            }else{
+                connection.rollback();
             }
+
+
+        }catch (Exception e){
 
         }
 
+
+
         return result;
     }
+
+
+
+
+
+
 
     public Members getMemberById(int id) throws SQLException {
         ResultSet resultSet = null;

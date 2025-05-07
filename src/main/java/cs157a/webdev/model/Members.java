@@ -21,13 +21,6 @@ public class Members {
 
     }
 
-    public Members(String firstName, String lastName, String email, int member_id) {
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.email = email;
-        this.member_id = member_id;
-    }
-
     public int getMember_id() {
         return member_id;
     }
