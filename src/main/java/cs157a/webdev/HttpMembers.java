@@ -76,7 +76,6 @@ public class HttpMembers extends BaseHttpHandler {
                 <a href="/member/">Add Member</a>
             </div>
             </div>
-                <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
                 <table>
                     <tr><th>Member ID</th><th>First Name</th><th>Last Name</th><th>Email INFO</th><th>Date Registered</th><th>Checkout Books</th><th>View Fines</th><th>EDIT</th><th>DELETE</th></tr>
                     \{htmlListMembers()}
